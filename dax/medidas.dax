@@ -1,0 +1,41 @@
+// =============================================================================
+// CASO 3 · DAX (7 medidas, con funciones ya usadas en los Casos 1 y 2:
+//          SUM, DIVIDE, CALCULATE, y DISTINCTCOUNT para pedidos y clientes)
+// Crear en Power BI Desktop: Inicio > Nueva medida (cada bloque es una medida).
+// Los nombres siguen los del Caso 1 (Sales Total, Profit Total, Margen de Ganancia).
+//
+// NO hay tabla Calendario ni funciones de inteligencia de tiempo: la línea de
+// tiempo usa la jerarquía de fechas de Order Date (Año > Mes), igual que en el
+// Caso 1.
+// =============================================================================
+
+
+Sales Total = SUM ( Orders[Sales] )
+
+Profit Total = SUM ( Orders[Profit] )
+
+Margen de Ganancia = DIVIDE ( [Profit Total], [Sales Total] )
+
+
+// Crecimiento de ventas 2020 vs 2019 (Pregunta 3).
+// CALCULATE cambia el filtro de año; Order Year es una columna creada en Power Query.
+Crecimiento de Ventas =
+DIVIDE (
+    CALCULATE ( [Sales Total], Orders[Order Year] = 2020 )
+        - CALCULATE ( [Sales Total], Orders[Order Year] = 2019 ),
+    CALCULATE ( [Sales Total], Orders[Order Year] = 2019 )
+)
+
+
+// Porcentaje de líneas de pedido con pérdida (Pregunta 1).
+Líneas con Pérdida % =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( Orders ), Orders[Profit] < 0 ),
+    COUNTROWS ( Orders )
+)
+
+
+// Un pedido tiene varias líneas, por eso se cuentan valores distintos.
+Pedidos = DISTINCTCOUNT ( Orders[Order ID] )
+
+Clientes = DISTINCTCOUNT ( Orders[Customer ID] )
